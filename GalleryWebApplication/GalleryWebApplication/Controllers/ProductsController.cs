@@ -18,21 +18,59 @@ namespace GalleryWebApplication.Controllers
             _context = context;
         }
 
-        // GET: Products
-        ////public async Task<IActionResult> Index(int id, string name)
-        ////{
-        ////    if (id == null) return RedirectToAction("Categories", "Index");
-        ////    ViewBag.CategoryId = id;
-        ////    ViewBag.CategoryName = name;
-        ////    var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
-
-        ////    return View(await dbgalleryContext.ToListAsync());
-        ////}
-        public async Task<IActionResult> Index()
+        /*public async Task<IActionResult> Index(int id, string name)
         {
-            var dbgalleryContext = _context.Products.Include(p => p.Category);
+            ViewBag.CategoryId = id;
+            ViewBag.CategoryName = name;
+            var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
             return View(await dbgalleryContext.ToListAsync());
         }
+        */ 
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int id, string name)
+        {
+            
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
+
+
+            ViewBag.CategoryId = id;
+            ViewBag.CategoryName = name;
+
+            ViewData["CurrentFilter"] = searchString;
+            var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
+            var products = from p in _context.Products.Where(a => a.CategoryId == id).Include(a => a.Category)
+                            select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.Name.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    products = products.OrderByDescending(p => p.Name);
+                    break;
+
+                case "Price":
+                    products = products.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.Name);
+                    break;
+            }
+            
+            return View(await products.AsNoTracking().ToListAsync());
+        }
+
+
+
+
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -44,6 +82,7 @@ namespace GalleryWebApplication.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -77,36 +116,34 @@ namespace GalleryWebApplication.Controllers
             return View();
         }
 
-        //public async Task<IActionResult> AddProduct(int? id)
-        //{
-        //    if (id == null || _context.Products == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var products = await _context.Products.ToListAsync();
-        //    ViewBag.CategoryId = id;
-        //    return View(products);
-        //}
+
         // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int categoryId, [Bind("Id,Name,CategoryId,Price,Info")] Product product)
+        public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info")] Product product)
         {
-            product.CategoryId= categoryId;
+
+            if (_context.Products.Any(i => i.Name == product.Name))
+            {
+                ModelState.AddModelError(nameof(product.Name), "This name is already in use.");
+            }
+            product.CategoryId = categoryId;
             if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-                //return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name} );
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name} );
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
-              //return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name} );
+            //ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            //return View(product);
+            return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name} );
 
         }
+
+
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -125,26 +162,7 @@ namespace GalleryWebApplication.Controllers
             return View(product);
         }
 
-        public async Task<IActionResult> Buy(int? productId, int? categoryId)
-        {
-            if (categoryId == null || productId == null)
-            {
-                return NotFound();
-            }
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == productId);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            ViewBag.CategoryId = categoryId;
-            return View(product);
-
-        }
-
-
-
+      
         // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -191,6 +209,7 @@ namespace GalleryWebApplication.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -214,14 +233,14 @@ namespace GalleryWebApplication.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

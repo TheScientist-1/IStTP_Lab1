@@ -25,6 +25,7 @@ namespace GalleryWebApplication.Controllers
             return View(await dbgalleryContext.ToListAsync());
         }
 
+
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -36,13 +37,20 @@ namespace GalleryWebApplication.Controllers
             var order = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Status)
+                .Include(o => o.OrderProducts)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            var productsInOrder = await _context.OrderProducts.
+                Where(elem => elem.OrderId == id).
+                Include(o => o.Product).
+                ToListAsync();
+            ViewBag.orderId = id;
+
             if (order == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(productsInOrder);
         }
 
         // GET: Orders/Create
@@ -64,7 +72,7 @@ namespace GalleryWebApplication.Controllers
             {
                 _context.Add(order);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("AddProduct", "Products", new { id = order.Id });
             }
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", order.CustomerId);
             ViewData["StatusId"] = new SelectList(_context.Statuses, "Id", "Id", order.StatusId);
@@ -126,26 +134,6 @@ namespace GalleryWebApplication.Controllers
             return View(order);
         }
 
-        // GET: Orders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Orders == null)
-            {
-                return NotFound();
-            }
-
-            var order = await _context.Orders
-                .Include(o => o.Customer)
-                .Include(o => o.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return View(order);
-        }
-
         // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -160,14 +148,14 @@ namespace GalleryWebApplication.Controllers
             {
                 _context.Orders.Remove(order);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool OrderExists(int id)
         {
-          return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Orders?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

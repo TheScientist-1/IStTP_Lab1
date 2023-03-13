@@ -16,6 +16,46 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = D:\ФКНК\2 курс\4 семестр\ІС\Lab\GalleryWebApplication\GalleryWebApplication
 build_property._RazorSourceGeneratorDebug = 
 
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/AuthorsProducts/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1Byb2R1Y3RzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/AuthorsProducts/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1Byb2R1Y3RzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/AuthorsProducts/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1Byb2R1Y3RzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/AuthorsProducts/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1Byb2R1Y3RzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/AuthorsProducts/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1Byb2R1Y3RzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Authors/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Authors/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Authors/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Authors/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Authors/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Categories/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcmllc1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -42,6 +82,26 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/OrderProducts/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJQcm9kdWN0c1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/OrderProducts/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJQcm9kdWN0c1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/OrderProducts/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJQcm9kdWN0c1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/OrderProducts/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJQcm9kdWN0c1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/OrderProducts/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJQcm9kdWN0c1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/ФКНК/2 курс/4 семестр/ІС/Lab/GalleryWebApplication/GalleryWebApplication/Views/Orders/Create.cshtml]

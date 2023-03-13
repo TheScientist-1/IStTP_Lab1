@@ -1,0 +1,102 @@
+﻿@*@model IEnumerable<GalleryWebApplication.Author>*@
+@model GalleryWebApplication.Models.GalleryViewModels.InstructorIndexData
+
+@{
+    ViewData["Title"] = "Authors";
+}
+
+<h1>Authors</h1>
+
+<p>
+    <a asp-action="Create">Create new Author</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th> Name</th>
+            <th>Contacts</th>
+
+            <th>Products</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Authors)
+        {
+        string selectedRow = "";
+            if (item.Id == (int?)ViewData["AuthorId"])
+            {
+                selectedRow = "table-success";
+            }
+            <tr class="@selectedRow">
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contacts)
+            </td>
+                <td>
+                    @foreach (var course in item.AuthorsProducts)
+                    {
+                        @course.Product.Id @course.Product.Name <br />
+                    }
+                    </td>
+            <td>
+                    <a asp-action="Index" asp-route-id="@item.Id">Select</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (Model.Products != null)
+{
+        <h3>Products created by selected author</h3>
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Category</th>
+                    <th>Price</th>
+                    <th>Information</th>
+
+            </tr>
+
+        @foreach (var item in Model.Products)
+        {
+            string selectedRow = "";
+            if (item.Id == (int?)ViewData["ProductId"])
+            {
+                selectedRow = "success";
+            }
+                    <tr class="@selectedRow">
+                        <td>
+                    @Html.ActionLink("Select", "Index", new { productId = item.Id })
+                        </td>
+                        <td>
+                    @item.Id
+                        </td>
+                        <td>
+                    @item.Name
+                        </td>
+                        <td>
+                    @item.Category.Name
+                        </td>
+                                <td>
+                    @item.Price
+                                </td>
+                                        <td>
+                    @item.Info
+                                </td>
+                    </tr>
+        }
+
+        </table>
+}
+
+
+
