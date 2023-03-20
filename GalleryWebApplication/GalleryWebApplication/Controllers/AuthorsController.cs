@@ -85,7 +85,7 @@ namespace GalleryWebApplication.Controllers
         [HttpPost]
 
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Contacts")] Author author)
+        public async Task<IActionResult> Create([Bind("Id,Name,Contacts")] Author author)
         {
             if (ModelState.IsValid)
             {
@@ -152,8 +152,7 @@ namespace GalleryWebApplication.Controllers
         // POST: Authors/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         /*public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Contacts")] Author author)
         {
             if (id != author.Id)
@@ -183,7 +182,8 @@ namespace GalleryWebApplication.Controllers
             }
             return View(author);
         }*/
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Contacts")] Author author, string[] selectedProducts)
         {
             if (id == null)
@@ -273,21 +273,36 @@ namespace GalleryWebApplication.Controllers
             return View(author);
         }
 
-        // POST: Authors/Delete/5
+        //// POST: Authors/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    if (_context.Authors == null)
+        //    {
+        //        return Problem("Entity set 'DbgalleryContext.Authors'  is null.");
+        //    }
+        //    var author = await _context.Authors.FindAsync(id);
+        //    if (author != null)
+        //    {
+        //        _context.Authors.Remove(author);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Authors == null)
-            {
-                return Problem("Entity set 'DbgalleryContext.Authors'  is null.");
-            }
-            var author = await _context.Authors.FindAsync(id);
-            if (author != null)
-            {
-                _context.Authors.Remove(author);
-            }
+            Author author = await _context.Authors
+                .Include(i => i.AuthorsProducts)
+                .SingleAsync(i => i.Id == id);
+
             
+
+            _context.Authors.Remove(author);
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

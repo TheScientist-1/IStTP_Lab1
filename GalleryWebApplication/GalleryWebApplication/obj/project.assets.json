@@ -10973,11 +10973,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\ФКНК\\2 курс\\4 семестр\\ІС\\Lab\\GalleryWebApplication\\GalleryWebApplication\\GalleryWebApplication.csproj",
+      "projectUniqueName": "C:\\Users\\m\\Desktop\\Нова папка (2)\\IStTP_Lab1\\GalleryWebApplication\\GalleryWebApplication\\GalleryWebApplication.csproj",
       "projectName": "GalleryWebApplication",
-      "projectPath": "D:\\ФКНК\\2 курс\\4 семестр\\ІС\\Lab\\GalleryWebApplication\\GalleryWebApplication\\GalleryWebApplication.csproj",
+      "projectPath": "C:\\Users\\m\\Desktop\\Нова папка (2)\\IStTP_Lab1\\GalleryWebApplication\\GalleryWebApplication\\GalleryWebApplication.csproj",
       "packagesPath": "C:\\Users\\m\\.nuget\\packages\\",
-      "outputPath": "D:\\ФКНК\\2 курс\\4 семестр\\ІС\\Lab\\GalleryWebApplication\\GalleryWebApplication\\obj\\",
+      "outputPath": "C:\\Users\\m\\Desktop\\Нова папка (2)\\IStTP_Lab1\\GalleryWebApplication\\GalleryWebApplication\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
