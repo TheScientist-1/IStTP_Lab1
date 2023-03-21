@@ -1,10 +1,13 @@
-﻿using System;
+﻿using NewGalleryWebApplication.Controllers;
+using System;
 using System.Collections.Generic;
 
 namespace NewGalleryWebApplication;
 
 public partial class Product
 {
+    Product(ProductViewModel pvm) { }
+    Product() { }
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;

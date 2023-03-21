@@ -9,6 +9,15 @@ using NewGalleryWebApplication;
 
 namespace NewGalleryWebApplication.Controllers
 {
+    public class ProductViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int CategoryId { get; set; }
+        public decimal Price { get; set; }
+        public string? Info { get; set; }
+    }
+    
     public class ProductsController : Controller
     {
         private readonly DbgalleryContext _context;
@@ -17,6 +26,7 @@ namespace NewGalleryWebApplication.Controllers
         {
             _context = context;
         }
+
 
         public async Task<IActionResult> Index(string sortOrder, string searchString, int id, string name)
         {
