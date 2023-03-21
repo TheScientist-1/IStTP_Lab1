@@ -1,4 +1,4 @@
-﻿@model NewGalleryWebApplication.Product
+﻿@model NewGalleryWebApplication.ProductViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -20,7 +20,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                <!-- <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select> -->
+                <!-- <select asp-for="CategoryId" class="form-control" asp-items="new SelectList(@ViewBag.Categories, nameof(Category.Id), nameof(Category.Name))"></select> -->
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories"></select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -9,14 +9,7 @@ using NewGalleryWebApplication;
 
 namespace NewGalleryWebApplication.Controllers
 {
-    public class ProductViewModel
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int CategoryId { get; set; }
-        public decimal Price { get; set; }
-        public string? Info { get; set; }
-    }
+    
     
     public class ProductsController : Controller
     {
@@ -28,7 +21,7 @@ namespace NewGalleryWebApplication.Controllers
         }
 
 
-        public async Task<IActionResult> Index(string sortOrder, string searchString, int id, string name)
+        public async Task<IActionResult> Index(int? id,string sortOrder, string searchString)
         {
 
             ViewData["CurrentSort"] = sortOrder;
@@ -37,7 +30,12 @@ namespace NewGalleryWebApplication.Controllers
 
 
             ViewBag.CategoryId = id;
-            ViewBag.CategoryName = name;
+            var test = _context.Categories.Where((a => a.Id == id)).FirstOrDefault();
+            if (test==null)
+            {
+                return NotFound();
+            }
+            ViewBag.CategoryName = test.Name;
 
             ViewData["CurrentFilter"] = searchString;
             var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
@@ -69,6 +67,43 @@ namespace NewGalleryWebApplication.Controllers
             return View(await products.AsNoTracking().ToListAsync());
         }
 
+
+        //public async Task<IActionResult> Index(string sortOrder, string searchString)
+        //{
+
+        //    ViewData["CurrentSort"] = sortOrder;
+        //    ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+        //    ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
+
+
+        //    ViewBag.CategoryId = -1;
+
+        //    ViewBag.CategoryName = "All categories";
+
+
+        //    var products = _context.Products;
+
+            
+
+        //    //switch (sortOrder)
+        //    //{
+        //    //    case "name_desc":
+        //    //        products = products.OrderByDescending(p => p.Name);
+        //    //        break;
+
+        //    //    case "Price":
+        //    //        products = products.OrderBy(p => p.Price);
+        //    //        break;
+        //    //    case "price_desc":
+        //    //        products = products.OrderByDescending(p => p.Price);
+        //    //        break;
+        //    //    default:
+        //    //        products = products.OrderBy(p => p.Name);
+        //    //        break;
+        //    //}
+
+        //    return View(await products.AsNoTracking().ToListAsync());
+        //}
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -155,8 +190,15 @@ namespace NewGalleryWebApplication.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
+            // ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            // List<SelectListItem> categoryList = new List<SelectListItem>();
+            // foreach (var cat in _context.Categories) {
+            //     categoryList.Add(new SelectListItem {Selected = true, Text = cat.Name, Value = cat.Id.ToString()});
+            // }
+            // ViewData["CategoryId"] = new SelectList(categoryList);
+            // ViewData["Categories"] = _context.Categories.ToList();
+            ViewData["Categories"] = new SelectList(_context.Categories, nameof(Category.Id), nameof(Category.Name));
+            return View(new ProductViewModel(product));
         }
 
 
@@ -165,23 +207,24 @@ namespace NewGalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Price,Info")] Product product)
+        public async Task<IActionResult> Edit(int id, ProductViewModel productvm)
         {
-            if (id != product.Id)
-            {
-                return NotFound();
-            }
-
+            
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var product = await _context.Products.FindAsync(id);
+                    product.Name  =  productvm.Name;
+                    product.Price = productvm.Price;
+                    product.CategoryId = productvm.CategoryId;
+                    product.Info = productvm.Info;
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!ProductExists(productvm.Id))
                     {
                         return NotFound();
                     }
@@ -192,8 +235,10 @@ namespace NewGalleryWebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
+            ViewData["Categories"] = new SelectList(_context.Categories, nameof(Category.Id), nameof(Category.Name));
+
+
+            return View(productvm);
         }
 
         // GET: Products/Delete/5
