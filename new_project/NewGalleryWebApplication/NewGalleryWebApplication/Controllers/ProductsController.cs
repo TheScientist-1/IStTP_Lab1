@@ -18,14 +18,6 @@ namespace NewGalleryWebApplication.Controllers
             _context = context;
         }
 
-        //// GET: Products
-        //public async Task<IActionResult> Index(int id, string name)
-        //{
-        //    ViewBag.CategoryId = id;
-        //    ViewBag.CategoryName = name;
-        //    var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
-        //    return View(await dbgalleryContext.ToListAsync());
-        //}
         public async Task<IActionResult> Index(string sortOrder, string searchString, int id, string name)
         {
 
@@ -98,8 +90,10 @@ namespace NewGalleryWebApplication.Controllers
 
 
         // GET: Products/Create
-        public IActionResult Create()
+        public IActionResult Create(int categoryId)
         {
+            ViewBag.CategoryId = categoryId;
+            ViewBag.CategoryName = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name;
             return View();
         }
 
@@ -110,13 +104,21 @@ namespace NewGalleryWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info")] Product product)
         {
+            ViewBag.CategoryId = categoryId;
+            ViewBag.CategoryName = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name;
+            product.CategoryId = categoryId;
+            var errors = ModelState
+             .Where(x => x.Value.Errors.Count > 0)
+              .Select(x => new { x.Key, x.Value.Errors })
+                     .ToArray();
             try
             {
                 if (ModelState.IsValid)
                 {
                     _context.Add(product);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    //return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name });
                 }
             }
             catch (DbUpdateException /* ex */)
@@ -126,7 +128,8 @@ namespace NewGalleryWebApplication.Controllers
                     "Try again, and if the problem persists " +
                     "see your system administrator.");
             }
-            return View(product);
+            //return View(product);
+            return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name });
         }
 
         // GET: Products/Edit/5
@@ -152,7 +155,7 @@ namespace NewGalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,CategoryId,Price,Info")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Price,Info")] Product product)
         {
             if (id != product.Id)
             {

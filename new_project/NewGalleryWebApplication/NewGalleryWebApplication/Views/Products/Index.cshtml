@@ -7,7 +7,8 @@
 <h1>Artworks in the categoty @ViewBag.CategoryName</h1>
 
 <p>
-   <a asp-action="Create" asp-route-id = "@ViewBag.CategoryId">Add new piece of art</a>
+  @* <a asp-action="Create" asp-route-id = "@ViewBag.CategoryId">Add new piece of art</a>*@
+  @Html.ActionLink("Add new artwork", "Create", new {categoryId = ViewBag.CategoryId})
 </p>
 
 <form asp-action="Index" method="get">

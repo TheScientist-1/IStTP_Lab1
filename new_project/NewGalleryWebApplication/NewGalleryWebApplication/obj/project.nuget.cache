@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "S9zdJ1xizHUoGnLWXJpJFN4dTd6OI5P3bS9/A5MphduNfREesIF+EFGkeI2Wvcxk24FIFdvwdUKfhTOtzyggDA==",
+  "dgSpecHash": "9kwDG9ToBn3DAz4F9Q0OV9kd98MjH1tWqcR4l9jK9yKBqrafSmo5Ry8zi/zxejh8dmw46wy4G6DsCabiiaMNpw==",
   "success": true,
-  "projectFilePath": "D:\\Нова папка (2)\\IStTP_Lab1\\new_project\\NewGalleryWebApplication\\NewGalleryWebApplication\\NewGalleryWebApplication.csproj",
+  "projectFilePath": "D:\\ФКНК\\2 курс\\4 семестр\\laba\\IStTP_Lab1\\new_project\\NewGalleryWebApplication\\NewGalleryWebApplication\\NewGalleryWebApplication.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\m\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\m\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
