@@ -18,9 +18,7 @@ public partial class Product
     public int CategoryId { get; set; }
 
     [Required(ErrorMessage = "The field should not be empty")]
-    [Range(0, 99999.99)]
-    [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Incorrect number format")]
-    [DataType(DataType.Currency)]
+
     public decimal Price { get; set; }
     [Display(Name = "Product information")]
     public string? Info { get; set; }
