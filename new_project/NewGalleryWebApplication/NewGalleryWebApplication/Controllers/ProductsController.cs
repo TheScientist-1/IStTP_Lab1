@@ -110,7 +110,6 @@ namespace NewGalleryWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info")] Product product)
         {
-            product.CategoryId = categoryId;
             try
             {
                 if (ModelState.IsValid)
