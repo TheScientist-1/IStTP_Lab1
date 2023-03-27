@@ -18,6 +18,7 @@ public partial class Product
 
     public int Id { get; set; }
 
+    [Display(Name = "Picture")]
     public string PhotoPath { get; set; }
 
     public string PhotoPathUrl
