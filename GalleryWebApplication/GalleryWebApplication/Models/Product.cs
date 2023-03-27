@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GalleryWebApplication;
 
@@ -10,9 +11,25 @@ public partial class Product
     {
         OrderProducts = new HashSet<OrderProduct>();
     }
+
+    
+    [NotMapped]
+    public IFormFile Photo { get; set; }
+
     public int Id { get; set; }
 
-    public Guid PhotoId { get; set; }
+    [Display(Name = "Picture")]
+    public string PhotoPath { get; set; }
+
+    public string PhotoPathUrl
+    {
+        get
+        {
+            var result = "/photos/" + PhotoPath;
+            Console.WriteLine(result);
+            return result;
+        }
+    }
 
     [Required(ErrorMessage = "The field should not be empty")]
     public string Name { get; set; } = null!;

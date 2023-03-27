@@ -7,7 +7,7 @@
 <h1>Artworks in the categoty @ViewBag.CategoryName</h1>
 
 <p>
-   <a asp-action="Create" asp-route-id = "@ViewBag.CategoryId">Add new piece of art</a>
+    <a asp-action="Create" asp-route-id="@ViewBag.CategoryId">Add new piece of art</a>
 </p>
 
 <form asp-action="Index" method="get">
@@ -25,49 +25,68 @@
         <tr>
             <td>
                 @Html.DisplayNameFor(model => model.Id)
-                </td>
+            </td>
             <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model.Name)</a>
-                </th>
-            
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model =>
+                    model.Name)</a>
+            </th>
+
             <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParm"]">@Html.DisplayNameFor(model => model.Price)</a>
-                </th>
-            
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["PriceSortParm"]">@Html.DisplayNameFor(model =>
+                    model.Price)</a>
+            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.Info)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Category)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhotoPath)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Id)
-                    </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Info)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Info)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    <div class="product-table-image">
+                        @* <h4>@Model.PhotoName</h4> *@
+                        @if (String.IsNullOrEmpty(item.PhotoPath))
+                        {
+                            <img src="/photos/nophoto.jpg" alt="KOT" />
+                        }
+                        else
+                        {
+                            <img src=@item.PhotoPathUrl alt="KOT" />
+                        }
+                    </div>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
