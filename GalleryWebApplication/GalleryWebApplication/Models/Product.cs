@@ -12,7 +12,7 @@ public partial class Product
     }
     public int Id { get; set; }
 
-    public Guid PhotoIds { get; set; }
+    public Guid PhotoId { get; set; }
 
     [Required(ErrorMessage = "The field should not be empty")]
     public string Name { get; set; } = null!;
