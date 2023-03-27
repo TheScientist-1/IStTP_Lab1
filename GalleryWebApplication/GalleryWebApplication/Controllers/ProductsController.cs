@@ -41,7 +41,7 @@ namespace GalleryWebApplication.Controllers
 
         public async Task<IActionResult> Index(string sortOrder, string searchString, int id, string name)
         {
-            
+
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
@@ -53,7 +53,7 @@ namespace GalleryWebApplication.Controllers
             ViewData["CurrentFilter"] = searchString;
             var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
             var products = from p in _context.Products.Where(a => a.CategoryId == id).Include(a => a.Category)
-                            select p;
+                           select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -76,7 +76,7 @@ namespace GalleryWebApplication.Controllers
                     products = products.OrderBy(p => p.Name);
                     break;
             }
-            
+
             return View(await products.AsNoTracking().ToListAsync());
         }
 
@@ -135,8 +135,15 @@ namespace GalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info")] Product product)
+        public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info,Photo")] ProductDTO productDTO)
         {
+            Console.WriteLine("==============DTO===============");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(productDTO));
+            Console.WriteLine("===============================");
+            var product = new Product(productDTO);
+            Console.WriteLine("==============Product=================");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(product));
+            Console.WriteLine("===============================");
 
             if (_context.Products.Any(i => i.Name == product.Name))
             {
@@ -145,14 +152,19 @@ namespace GalleryWebApplication.Controllers
             product.CategoryId = categoryId;
             if (ModelState.IsValid)
             {
+                var photoFileName = UploadPhotoAndReturnItsName(productDTO.Photo);
+                product.PhotoPath = photoFileName;
+
+
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));
-                return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name} );
+                return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name });
             }
             //ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
             //return View(product);
-            return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name} );
+            return RedirectToAction("Index", "Products", new { id = categoryId, name = _context.Categories.Where(p => p.Id == categoryId).FirstOrDefault().Name });
 
         }
 
@@ -184,17 +196,29 @@ namespace GalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Price,Info")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Price,Info,PhotoPath")] ProductDTO productDTO)
         {
-            if (id != product.Id)
+            var product = new Product(productDTO);
+
+            
+
+            if (id != productDTO.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                if (productDTO.Photo != null)
+                {
+                    Console.WriteLine(11111111111111111);
+                    var photoFileName = UploadPhotoAndReturnItsName(productDTO.Photo);
+                    product.PhotoPath = photoFileName;
+                }
+
                 try
                 {
+                    Console.WriteLine($"\n\n\n {product.PhotoPath}  \n\n\n");
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -261,6 +285,32 @@ namespace GalleryWebApplication.Controllers
         private bool ProductExists(int id)
         {
             return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public string UploadPhotoAndReturnItsName(IFormFile photo)
+        {
+            if (photo == null || photo.Length == 0)
+            {
+                // return BadRequest("Invalid file");
+            }
+
+            var oldfileName = Path.GetFileName(photo.FileName);
+            // var fileName = Guid.NewGuid().ToString() + Path.GetFileName(photo.FileName);
+
+            var fileParts = oldfileName.Split(".");
+
+            var fileExtension = fileParts[fileParts.Length - 1];
+
+            var fileName = Guid.NewGuid().ToString() + "." + fileExtension;
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos", fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                photo.CopyTo(stream);
+            }
+
+            return fileName;
         }
     }
 }

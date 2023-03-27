@@ -40,3 +40,13 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+<div>
+    @* <h4>@Model.PhotoName</h4> *@
+    @if(String.IsNullOrEmpty(Model.PhotoPath) ){
+    <img class="details-photo" src="/photos/nophoto.jpg" alt="KOT" />
+    }
+    else {
+    <img src=@Model.PhotoPathUrl alt="KOT" />
+    }
+</div>

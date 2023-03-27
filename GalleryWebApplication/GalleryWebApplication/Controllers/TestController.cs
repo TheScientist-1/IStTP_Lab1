@@ -39,8 +39,9 @@ namespace GalleryWebApplication.Controllers
             {
                 return BadRequest("Invalid file");
             }
-
-            var fileName = Path.GetFileName(photo.FileName);
+            
+            var fileName = Guid.NewGuid().ToString() + Path.GetFileName(photo.FileName);
+            
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "photos", fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))

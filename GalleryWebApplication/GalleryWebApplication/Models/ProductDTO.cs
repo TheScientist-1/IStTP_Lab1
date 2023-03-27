@@ -1,43 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GalleryWebApplication;
 
-public partial class Product
+public partial class ProductDTO
 {
-    public Product()
+    public ProductDTO()
     {
         OrderProducts = new HashSet<OrderProduct>();
     }
-
-    public Product(ProductDTO productDTO)
-    {
-        Id = productDTO.Id;
-        Name = productDTO.Name;
-        CategoryId = productDTO.CategoryId;
-        Price = productDTO.Price;
-        Info = productDTO.Info;
-        PhotoPath = productDTO.PhotoPath;
-        
-    }
-
     public int Id { get; set; }
 
-    public string PhotoPath { get; set; }
-
-    public string PhotoPathUrl
-    {
-        get
-        {
-            var result = "/photos/" + PhotoPath;
-            Console.WriteLine(result);
-            return result;
-        }
-    }
+    public IFormFile Photo { get; set; }
 
     [Required(ErrorMessage = "The field should not be empty")]
     public string Name { get; set; } = null!;
+
+    public string PhotoPath { get; set; }
 
     public int CategoryId { get; set; }
 
