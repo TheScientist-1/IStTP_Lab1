@@ -6,7 +6,13 @@ namespace NewGalleryWebApplication;
 
 public partial class Product
 {
-    Product(ProductViewModel pvm) { }
+    Product(ProductViewModel pvm)
+    {
+        Name = pvm.Name;
+        Price = pvm.Price;
+        CategoryId = pvm.CategoryId;
+        Info = pvm.Info;
+    }
     Product() { }
     public int Id { get; set; }
 
