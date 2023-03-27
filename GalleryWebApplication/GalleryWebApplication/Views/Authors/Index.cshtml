@@ -37,9 +37,10 @@
                 @Html.DisplayFor(modelItem => item.Contacts)
             </td>
                 <td>
-                    @foreach (var course in item.AuthorsProducts)
+                    @foreach (var prod in item.AuthorsProducts)
                     {
-                        @course.Product.Id @course.Product.Name <br />
+                                <a href="@Url.Action("Details", "Products", new { id = @prod.Product.Id })">@prod.Product.Name</a> <br />
+
                     }
                     </td>
             <td>

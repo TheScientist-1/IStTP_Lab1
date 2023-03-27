@@ -66,8 +66,9 @@ namespace GalleryWebApplication.Controllers
             {
                 return NotFound();
             }
-            return View(author);
+            //return View(author);
             //return RedirectToAction("Index", "AuthorsProducts", new { id = author.Id, name = author.Name });
+            return RedirectToAction("Smth", "Products", new { id = author.Id });
 
         }
 

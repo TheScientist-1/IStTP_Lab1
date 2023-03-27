@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GalleryWebApplication;
+using GalleryWebApplication.Models.GalleryViewModels;
 
 namespace GalleryWebApplication.Controllers
 {
@@ -18,14 +19,26 @@ namespace GalleryWebApplication.Controllers
             _context = context;
         }
 
-        /*public async Task<IActionResult> Index(int id, string name)
+        public async Task<IActionResult> Smth(int id)
         {
-            ViewBag.CategoryId = id;
-            ViewBag.CategoryName = name;
-            var dbgalleryContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
-            return View(await dbgalleryContext.ToListAsync());
+            var author = await _context.Authors
+             .Include(a => a.AuthorsProducts)
+             .ThenInclude(ap => ap.Product)
+                 .ThenInclude(p => p.Category)
+             .FirstOrDefaultAsync(a => a.Id == id);
+
+            var authorProductIds = author.AuthorsProducts
+                .Select(ap => ap.ProductId)
+                .ToList();
+
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Where(p => authorProductIds.Contains(p.Id))
+                .ToListAsync();
+
+            return View(products);
         }
-        */ 
+
         public async Task<IActionResult> Index(string sortOrder, string searchString, int id, string name)
         {
             
@@ -154,15 +167,18 @@ namespace GalleryWebApplication.Controllers
             }
 
             var product = await _context.Products.FindAsync(id);
+
             if (product == null)
             {
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+
             return View(product);
+
         }
 
-      
+
         // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -193,10 +209,12 @@ namespace GalleryWebApplication.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Products", new { id = product.CategoryId, name = _context.Categories.Where(p => p.Id == product.CategoryId).FirstOrDefault().Name });
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
-            return View(product);
+            return RedirectToAction("Index", "Products", new { id = product.CategoryId, name = _context.Categories.Where(p => p.Id == product.CategoryId).FirstOrDefault().Name });
+
         }
 
         // GET: Products/Delete/5
@@ -235,7 +253,9 @@ namespace GalleryWebApplication.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Products", new { id = product.CategoryId, name = _context.Categories.Where(p => p.Id == product.CategoryId).FirstOrDefault().Name });
+
         }
 
         private bool ProductExists(int id)
