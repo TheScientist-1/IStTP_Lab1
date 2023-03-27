@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GalleryWebApplication;
 
@@ -11,16 +12,9 @@ public partial class Product
         OrderProducts = new HashSet<OrderProduct>();
     }
 
-    public Product(ProductDTO productDTO)
-    {
-        Id = productDTO.Id;
-        Name = productDTO.Name;
-        CategoryId = productDTO.CategoryId;
-        Price = productDTO.Price;
-        Info = productDTO.Info;
-        PhotoPath = productDTO.PhotoPath;
-        
-    }
+    
+    [NotMapped]
+    public IFormFile Photo { get; set; }
 
     public int Id { get; set; }
 

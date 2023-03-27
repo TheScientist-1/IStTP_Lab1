@@ -135,12 +135,12 @@ namespace GalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info,Photo")] ProductDTO productDTO)
+        public async Task<IActionResult> Create(int categoryId, [Bind("Name,CategoryId,Price,Info,Photo")] Product product)
         {
             Console.WriteLine("==============DTO===============");
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(productDTO));
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(product));
             Console.WriteLine("===============================");
-            var product = new Product(productDTO);
+            // var product = new Product(product);
             Console.WriteLine("==============Product=================");
             Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(product));
             Console.WriteLine("===============================");
@@ -152,8 +152,11 @@ namespace GalleryWebApplication.Controllers
             product.CategoryId = categoryId;
             if (ModelState.IsValid)
             {
-                var photoFileName = UploadPhotoAndReturnItsName(productDTO.Photo);
-                product.PhotoPath = photoFileName;
+                if (product.Photo != null)
+                {
+                    var photoFileName = UploadPhotoAndReturnItsName(product.Photo);
+                    product.PhotoPath = photoFileName;
+                }
 
 
 
@@ -196,23 +199,19 @@ namespace GalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Price,Info,PhotoPath")] ProductDTO productDTO)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Price,Info,PhotoPath,Photo")] Product product)
         {
-            var product = new Product(productDTO);
-
-            
-
-            if (id != productDTO.Id)
+            if (id != product.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                if (productDTO.Photo != null)
+                if (product.Photo != null)
                 {
                     Console.WriteLine(11111111111111111);
-                    var photoFileName = UploadPhotoAndReturnItsName(productDTO.Photo);
+                    var photoFileName = UploadPhotoAndReturnItsName(product.Photo);
                     product.PhotoPath = photoFileName;
                 }
 
