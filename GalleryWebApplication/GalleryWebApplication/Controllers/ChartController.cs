@@ -28,22 +28,6 @@ namespace GalleryWebApplication.Controllers
             return new JsonResult(catProduct);
         }
 
-        //[HttpGet("AuthorProducts")]
-        //public JsonResult AuthorProducts()
-        //{
-        //    var authors = _context.Authors.Include(a => a.AuthorsProducts).ThenInclude(ap => ap.Product).ToList();
-
-        //    List<object> authorProd = new List<object>();
-        //    authorProd.Add(new object[] { "Author", "Number of artworks" });
-        //    foreach (var a in authors)
-        //    {
-        //        int productCount = a.AuthorsProducts.Sum(ap => ap.Product != null ? 1 : 0);
-
-        //        authorProd.Add(new object[] { a.Name, productCount });
-        //    }
-
-        //    return new JsonResult(authorProd);
-        //}
         [HttpGet("AuthorProducts")]
         public JsonResult AuthorProducts()
         {
@@ -60,5 +44,24 @@ namespace GalleryWebApplication.Controllers
 
             return new JsonResult(authorProd);
         }
+
+        [HttpGet("AuthorProductsLineChart")]
+        public JsonResult AuthorProductsLineChart()
+        {
+            var authors = _context.Authors.Include(a => a.AuthorsProducts).ThenInclude(ap => ap.Product).ToList();
+
+            var chartData = new List<object>();
+            chartData.Add(new object[] { "Author", "Number of artworks" });
+
+            foreach (var a in authors)
+            {
+                int productCount = a.AuthorsProducts.Sum(ap => ap.Product != null ? 1 : 0);
+
+                chartData.Add(new object[] { a.Name, productCount });
+            }
+
+            return new JsonResult(chartData);
+        }
+
     }
 }
