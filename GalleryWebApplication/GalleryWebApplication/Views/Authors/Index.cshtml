@@ -46,7 +46,7 @@
             <td>
                     <a asp-action="Index" asp-route-id="@item.Id">Select</a> |
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Artworks</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
@@ -58,8 +58,6 @@
         <h3>Products created by selected author</h3>
         <table class="table">
             <tr>
-                <th></th>
-                <th>Id</th>
                 <th>Name</th>
                 <th>Category</th>
                     <th>Price</th>
@@ -75,12 +73,12 @@
                 selectedRow = "success";
             }
                     <tr class="@selectedRow">
-                        <td>
+                        @*<td>
                     @Html.ActionLink("Select", "Index", new { productId = item.Id })
-                        </td>
-                        <td>
+                        </td>*@
+                       @* <td>
                     @item.Id
-                        </td>
+                        </td>*@
                         <td>
                     @item.Name
                         </td>
@@ -98,83 +96,19 @@
 
         </table>
 }
-@*<div class="container">
-    <div id="chart1"></div>
-</div>
-@section scripts{
-            <html>
-          <head>
-            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-            <script type="text/javascript">
-              google.charts.load('current', {'packages':['bar']});
-              google.charts.setOnLoadCallback(drawChart);
-              function drawChart() {
-                        $.get('/api/Chart/AuthorProducts', function(AuthorProducts) {
-                var data = google.visualization.arrayToDataTable(JsonData, false);
-                var formatter = new google.visualization.NumberFormat({ prefix: '$' });
-                formatter.format(data, 2);
-                formatter.format(data, 3);
-                var option = {
-                  chart: {
-                        title: "Author",
-                        subtitle: "Number of artworks",
-                  },
-                  bars: 'horizontal' // Required for Material Bar Charts.
-                };
-                var chart = new google.charts.Bar(document.getElementById('barchart_material'));
-                chart.draw(data, google.charts.Bar.convertOptions(option));
-                });
-              }
-            </script>
-          </head>
-          <body>
-            <div id="barchart_material" style="width: 900px; height: 500px;"></div>
-          </body>
-        </html>
-}
 
-@*
-
-@*
 <div class="container">
     <div id="chart1"></div>
-</div>
-
-@section scripts{
-           <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript">
-            google.charts.load('current', {'packages':['bar']});
-            google.charts.setOnLoadCallback(drawChart);
-
-                function drawChart() {
-            $.get('/api/Chart/AuthorProducts', function(AuthorProducts) {
-            var data = google.visualization.arrayToDataTable(AuthorProducts, false);
-            var formatter = new google.visualization.NumberFormat({ prefix: '$' });
-            formatter.format(data, 2);
-            formatter.format(data, 3);
-            var options = {
-                chart: {
-                    title: 'Author',
-                    subtitle: 'Number of artworks'
-                },
-                bars: 'horizontal'
-            };
-            var chart = new google.charts.Bar(document.getElementById('chart1'));
-            chart.draw(data, google.charts.Bar.convertOptions(options));
-        });
-    }
-        </script>
-}
-*@
-<div class="container">
     <div id="chart2"></div>
 </div>
+
 @section scripts{
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript">
             google.charts.load('current', { 'packages': ['bar'] });
-            google.charts.setOnLoadCallback(drawChart);
-            function drawChart() {
+            google.charts.setOnLoadCallback(drawChart1);
+
+            function drawChart1() {
                 $.get('/api/Chart/AuthorProducts', function (authorData) {
                     var data = new google.visualization.arrayToDataTable(authorData);
                     var formatter = new google.visualization.NumberFormat({ prefix: '$' });
@@ -186,10 +120,28 @@
                         },
                         bars: 'horizontal'
                     };
-                    var chart = new google.charts.Bar(document.getElementById('chart2'));
+                    var chart = new google.charts.Bar(document.getElementById('chart1'));
                     chart.draw(data, google.charts.Bar.convertOptions(options));
+                });
+            }
+
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart2);
+
+            function drawChart2() {
+                $.get('/api/Chart/AuthorProductsLineChart', function(chartData) {
+                    var data = google.visualization.arrayToDataTable(chartData);
+
+                    var options = {
+                        title: 'Author Products',
+                        curveType: 'function',
+                        legend: { position: 'bottom' }
+                    };
+
+                    var chart = new google.visualization.LineChart(document.getElementById('chart2'));
+
+                    chart.draw(data, options);
                 });
             }
         </script>
 }
-

@@ -23,9 +23,9 @@
 <table class="table">
     <thead>
         <tr>
-            <td>
+            @*<td>
                 @Html.DisplayNameFor(model => model.Id)
-            </td>
+            </td>*@
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model =>
                     model.Name)</a>
@@ -52,9 +52,9 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.Id)
-                </td>
+                </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
