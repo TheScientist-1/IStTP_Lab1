@@ -25,7 +25,7 @@
 </div>
 
 <div>
-    <h3>Завантаженнф інформації в файл</h3>
+    <h3>Завантаження інформації в файл (весь вміст)</h3>
     <a asp-action="Export">Завантажити</a>
 
 </div>
@@ -53,8 +53,9 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Artworks</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-action="ExportCat" asp-route-id="@item.Id">Export Category</a>
             </td>
         </tr>
 }

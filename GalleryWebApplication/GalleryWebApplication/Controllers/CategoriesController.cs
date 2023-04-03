@@ -27,9 +27,9 @@ namespace GalleryWebApplication.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-              return _context.Categories != null ? 
-                          View(await _context.Categories.ToListAsync()) :
-                          Problem("Entity set 'DbgalleryContext.Categories'  is null.");
+            return _context.Categories != null ?
+                        View(await _context.Categories.ToListAsync()) :
+                        Problem("Entity set 'DbgalleryContext.Categories'  is null.");
         }
 
         // GET: Categories/Details/5
@@ -48,7 +48,7 @@ namespace GalleryWebApplication.Controllers
             }
 
             //return View(category);
-            return RedirectToAction("Index", "Products", new { id=category.Id, name=category.Name});
+            return RedirectToAction("Index", "Products", new { id = category.Id, name = category.Name });
 
         }
 
@@ -157,15 +157,16 @@ namespace GalleryWebApplication.Controllers
             {
                 _context.Categories.Remove(category);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
 
 
         [HttpPost]
@@ -176,147 +177,251 @@ namespace GalleryWebApplication.Controllers
             {
                 if (fileExcel != null)
                 {
-                    try
+                    using (var stream = new FileStream(fileExcel.FileName, FileMode.Create))
                     {
-                        using (var stream = new FileStream(fileExcel.FileName, FileMode.Create))
+                        await fileExcel.CopyToAsync(stream);
+
+                        var workBook = new XLWorkbook(stream);
+
+                        foreach (IXLWorksheet worksheet in workBook.Worksheets)
                         {
-                            await fileExcel.CopyToAsync(stream);
-                            var workBook = GetWorkBook(stream);
-                            await ImportData(workBook);
+                            var categoryName = worksheet.Name;
+                            var category = await GetOrCreateCategory(categoryName);
+
+                            foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
+                            {
+                                try
+                                {
+                                    var product = await CreateProductFromRow(row, category);
+                                    await AddAuthorsToProduct(product, row);
+                                }
+                                catch (Exception e)
+                                {
+                                    return View("ImportError");
+                                }
+                            }
                         }
-                        return RedirectToAction(nameof(Index));
                     }
-                    catch (Exception ex)
-                    {
-                        // logging and error handling
-                        return View("ImportError");
-                    }
+
+                    await _context.SaveChangesAsync();
                 }
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private XLWorkbook GetWorkBook(Stream stream)
+        private async Task<Category> GetOrCreateCategory(string categoryName)
         {
-            return new XLWorkbook(stream);
-        }
+            var existingCategory = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Name.Contains(categoryName));
 
-        private async Task ImportData(XLWorkbook workBook)
-        {
-            foreach (IXLWorksheet worksheet in workBook.Worksheets)
+            if (existingCategory != null)
             {
-                var category = await GetOrCreateCategory(worksheet.Name);
-                foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
-                {
-                    var product = await CreateProduct(row, category);
-                    await AddProductToDb(product);
-                }
+                return existingCategory;
             }
-        }
 
-        private async Task<Category> GetOrCreateCategory(string name)
-        {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name.Contains(name));
-            if (category == null)
+            var newCategory = new Category
             {
-                category = new Category();
-                category.Name = name;
-                category.Info = "from EXCEL";
-                _context.Categories.Add(category);
-                await _context.SaveChangesAsync();
-            }
-            return category;
+                Name = categoryName,
+                Info = "from EXCEL"
+            };
+
+            _context.Categories.Add(newCategory);
+            await _context.SaveChangesAsync();
+
+            return newCategory;
         }
 
-        private async Task<Product> CreateProduct(IXLRow row, Category category)
+        private async Task<Product> CreateProductFromRow(IXLRow row, Category category)
         {
-            var product = new Product();
-            product.Name = row.Cell(1).Value.ToString();
-            product.PhotoPath = row.Cell(2).Value.ToString();
-            product.Price = decimal.Parse(row.Cell(3).Value.ToString());
-            product.Info = row.Cell(4).Value.ToString();
-            product.CategoryId = category.Id;
-           // _context.Products.Add(product);
-            return product;
-
-            //for (int i = 6; i <= 10; i++)
-            //{
-            //    if (row.Cell(i).Value.ToString().Length > 0)
-            //    {
-            //        var author = await GetOrCreateAuthor(row.Cell(i).Value.ToString());
-            //        //product.AuthorsProducts.Add(new AuthorsProduct { ProductId = product.Id, AuthorId = author.Id });
-            //    }
-            //}
-        }
-
-        private async Task<Author> GetOrCreateAuthor(string name)
-        {
-            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Name.Contains(name));
-            if (author == null)
+            var product = new Product
             {
-                author = new Author();
-                author.Name = name;
-                author.Contacts = "from EXCEL";
-                _context.Authors.Add(author);
-                await _context.SaveChangesAsync();
-            }
-            return author;
-        }
+                Name = row.Cell(1).Value.ToString(),
+                PhotoPath = row.Cell(2).Value.ToString(),
+                Price = decimal.Parse(row.Cell(3).Value.ToString()),
+                Info = row.Cell(4).Value.ToString(),
+                Category = category
+            };
 
-        private async Task AddProductToDb(Product product)
-        {
             _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return product;
+        }
+
+        private async Task AddAuthorsToProduct(Product product, IXLRow row)
+        {
+            for (int i = 6; i <= 20; i++)
+            {
+                var authorName = row.Cell(i).Value.ToString();
+
+                if (string.IsNullOrWhiteSpace(authorName))
+                {
+                    continue;
+                }
+
+                var author = await GetOrCreateAuthor(authorName);
+
+                var authorsProduct = new AuthorsProduct
+                {
+                    ProductId = product.Id,
+                    AuthorId = author.Id
+                };
+
+                _context.AuthorsProducts.Add(authorsProduct);
+            }
+
             await _context.SaveChangesAsync();
         }
 
+        private async Task<Author> GetOrCreateAuthor(string authorName)
+        {
+            var existingAuthor = await _context.Authors
+                .FirstOrDefaultAsync(a => a.Name.Contains(authorName));
+
+            if (existingAuthor != null)
+            {
+                return existingAuthor;
+            }
+
+            var newAuthor = new Author
+            {
+                Name = authorName,
+                Contacts = "from EXCEL"
+            };
+
+            _context.Authors.Add(newAuthor);
+            await _context.SaveChangesAsync();
+
+            return newAuthor;
+        }
+
+
+        /*
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Import(IFormFile fileExcel)
+        {
+            if (ModelState.IsValid)
+            {
+                if (fileExcel != null)
+                {
+                    using (var stream = new FileStream(fileExcel.FileName, FileMode.Create))
+                    {
+                        await fileExcel.CopyToAsync(stream);
+                        using (XLWorkbook workBook = new XLWorkbook(stream))
+                        {
+                            //перегляд усіх листів (в даному випадку категорій)
+                            foreach (IXLWorksheet worksheet in workBook.Worksheets)
+                            {
+                                //worksheet.Name - назва категорії. Пробуємо знайти в БД, якщо відсутня, то створюємо нову
+                                Category newcat;
+                                var c = (from cat in _context.Categories
+                                         where cat.Name.Contains(worksheet.Name)
+                                         select cat).ToList();
+                                if (c.Count > 0)
+                                {
+                                    newcat = c[0];
+                                }
+                                else
+                                {
+                                    newcat = new Category();
+                                    newcat.Name = worksheet.Name;
+                                    newcat.Info = "from EXCEL";
+                                    //додати в контекст
+                                    _context.Categories.Add(newcat);
+                                }
+                                //перегляд усіх рядків                    
+                                foreach (IXLRow row in worksheet.RowsUsed().Skip(1))
+                                {
+                                    try
+                                    {
+                                        Product product = new Product();
+                                        product.Name = row.Cell(1).Value.ToString();
+                                        product.PhotoPath = row.Cell(2).Value.ToString();
+                                        product.Price = decimal.Parse(row.Cell(3).Value.ToString());
+                                        product.Info = row.Cell(4).Value.ToString();
+                                        product.Category = newcat;
+                                        _context.Products.Add(product);
+                                        _context.SaveChanges();
+
+                                        //у разі наявності автора знайти його, у разі відсутності - додати
+                                        for (int i = 6; i <= 20; i++)
+                                        {
+                                            if (row.Cell(i).Value.ToString().Length > 0)
+                                            {
+                                                Author author;
+                                                var a = (from aut in _context.Authors
+                                                         where aut.Name.Contains(row.Cell(i).Value.ToString())
+                                                         select aut).ToList();
+                                                if (a.Count > 0)
+                                                {
+                                                    author = a[0];
+                                                }
+                                                else
+                                                {
+                                                    author = new Author();
+                                                    author.Name = row.Cell(i).Value.ToString();
+                                                    author.Contacts = "from EXCEL";
+                                                    //додати в контекст
+                                                    _context.Add(author);
+                                                    _context.SaveChanges();
+                                                }
+                                                AuthorsProduct ap = new AuthorsProduct();
+                                                ap.ProductId = product.Id;
+                                                ap.AuthorId = author.Id;
+                                                _context.AuthorsProducts.Add(ap);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        //logging самостійно :)
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        */
 
 
         public ActionResult Export()
         {
             using (XLWorkbook workbook = new XLWorkbook())
             {
-                var categories = _context.Categories.Include("Products").ToList();
-                //тут, для прикладу ми пишемо усі книжки з БД, в своїх проєктах ТАК НЕ РОБИТИ (писати лише вибрані)
-                foreach (var c in categories)
+                var categories = _context.Categories.Include(c => c.Products).ToList();
+                foreach (var category in categories)
                 {
-                    var worksheet = workbook.Worksheets.Add(c.Name);
+                    var worksheet = workbook.Worksheets.Add(category.Name);
 
-                    worksheet.Cell("A1").Value = "Name";
-                    worksheet.Cell("B1").Value = "Photo Path";
-                    worksheet.Cell("C1").Value = "Price";
-                    worksheet.Cell("D1").Value = "Info";
-                    worksheet.Cell("E1").Value = "Category";
-                    worksheet.Cell("F1").Value = "Authors";
-                    worksheet.Row(1).Style.Font.Bold = true;
-                    var products = c.Products.ToList();
+                    var headers = new List<string> { "Name", "Photo Path", "Price", "Info", "Category", "Authors" };
+                    for (int i = 0; i < headers.Count; i++)
+                    {
+                        worksheet.Cell(1, i + 1).Value = headers[i];
+                        worksheet.Row(1).Style.Font.Bold = true;
+                    }
 
-                    //нумерація рядків/стовпчиків починається з індекса 1 (не 0)
+                    var products = category.Products.ToList();
                     for (int i = 0; i < products.Count; i++)
                     {
                         worksheet.Cell(i + 2, 1).Value = products[i].Name;
                         worksheet.Cell(i + 2, 2).Value = products[i].PhotoPath;
                         worksheet.Cell(i + 2, 3).Value = products[i].Price;
                         worksheet.Cell(i + 2, 4).Value = products[i].Info;
-                        var category = _context.Products
-                         .Where(p => p.Id == products[i].Id)
-                         .Select(p => p.Category)
-                         .FirstOrDefault();
-
                         worksheet.Cell(i + 2, 5).Value = category.Name;
-
-
 
                         var authors = _context.Products
                             .Where(p => p.Id == products[i].Id)
                             .SelectMany(p => p.AuthorsProducts)
                             .Select(ap => ap.Author)
                             .ToList();
-
-
-                        //var ab = _context.AuthorsProducts.Where(a => a.ProductId == products[i].Id).Include("Author").ToList();
-
-
-                        //більше 4-ох нікуди писати
                         int j = 0;
                         foreach (var a in authors)
                         {
@@ -333,17 +438,95 @@ namespace GalleryWebApplication.Controllers
                 {
                     workbook.SaveAs(stream);
                     stream.Flush();
-
-                    return new FileContentResult(stream.ToArray(),
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    return new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     {
-                        //змініть назву файла відповідно до тематики Вашого проєкту
-
-                        FileDownloadName = $"library_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+                        FileDownloadName = $"gallery_{DateTime.UtcNow.ToShortDateString()}.xlsx"
                     };
                 }
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public ActionResult ExportCat(int id)
+        {
+            try
+            {
+                using (XLWorkbook workbook = new XLWorkbook())
+                {
+                    var category = _context.Categories.Include(c => c.Products).FirstOrDefault(c => c.Id == id);
+                    if (category == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var prod = category.Products.ToList();
+
+                    var worksheet = workbook.Worksheets.Add(category.Name);
+
+                    var headers = new List<string> { "Name", "Photo Path", "Price", "Info", "Category", "Authors" };
+                    for (int i = 0; i < headers.Count; i++)
+                    {
+                        worksheet.Cell(1, i + 1).Value = headers[i];
+                        worksheet.Row(1).Style.Font.Bold = true;
+                    }
+
+                    for (int i = 0; i < prod.Count; i++)
+                    {
+                        worksheet.Cell(i + 2, 1).Value = prod[i].Name;
+                        worksheet.Cell(i + 2, 2).Value = prod[i].PhotoPath;
+                        worksheet.Cell(i + 2, 3).Value = prod[i].Price;
+                        worksheet.Cell(i + 2, 4).Value = prod[i].Info;
+                        worksheet.Cell(i + 2, 5).Value = category.Name;
+
+                        var authors = _context.Products
+                            .Where(p => p.Id == prod[i].Id)
+                            .SelectMany(p => p.AuthorsProducts)
+                            .Select(ap => ap.Author)
+                            .ToList();
+
+                        int j = 0;
+                        foreach (var a in authors)
+                        {
+                            if (j < authors.Count())
+                            {
+                                worksheet.Cell(i + 2, j + 6).Value = a.Name;
+                                j++;
+                            }
+
+                        }
+                    }
+
+                    using (var stream = new MemoryStream())
+                    {
+                        workbook.SaveAs(stream);
+                        stream.Flush();
+                        string name = _context.Categories.Where(p => p.Id == id).FirstOrDefault().Name;
+                        return new FileContentResult(stream.ToArray(),
+                                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        {
+                            FileDownloadName = $"{name}_{DateTime.UtcNow.ToShortDateString()}.xlsx"
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and return an error response
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+
+        }
     }
 }

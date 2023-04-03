@@ -33,6 +33,7 @@ public partial class Product
 
     [Required(ErrorMessage = "The field should not be empty")]
     public string Name { get; set; } = null!;
+    [Display(Name = "Category name")]
 
     public int CategoryId { get; set; }
 
