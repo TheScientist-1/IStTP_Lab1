@@ -15,6 +15,7 @@ namespace GalleryWebApplication.ViewModel
         //[Required(ErrorMessage = "You must enter your username!")]
         //public string Username { get; set; }
 
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [Required(ErrorMessage = "You must enter password!")]
         [DataType(DataType.Password)]
         public string Password { get; set; }

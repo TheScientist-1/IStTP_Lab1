@@ -5,10 +5,13 @@
 }
 
 <h1>Artworks in the categoty @ViewBag.CategoryName</h1>
-
-<p>
+@if (User.IsInRole("admin"))
+{
+  <p>
     <a asp-action="Create" asp-route-id="@ViewBag.CategoryId">Add new piece of art</a>
-</p>
+</p>  
+}
+
 
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
@@ -81,9 +84,16 @@
                     </div>
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                     |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    
+                    @if (User.IsInRole("admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+                    }
+
                 </td>
             </tr>
         }

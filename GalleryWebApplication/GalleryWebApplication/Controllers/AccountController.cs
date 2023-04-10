@@ -29,6 +29,7 @@ namespace GalleryWebApplication.Controllers
             {
                 User user = new User { Email = model.Email, UserName = model.Email, Name = model.Name };
                 var result = await _userManager.CreateAsync(user, model.Password);
+                
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, false);
@@ -36,10 +37,13 @@ namespace GalleryWebApplication.Controllers
                 }
                 else
                 {
+                    string errorMessage = string.Empty;
                     foreach (var error in result.Errors)
                     {
+                        errorMessage += error.Description + " ";
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
+                    ViewBag.ErrorMessage = errorMessage;
                 }
             }
             return View(model);

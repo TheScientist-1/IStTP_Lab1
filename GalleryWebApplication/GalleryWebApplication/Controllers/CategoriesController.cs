@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace GalleryWebApplication.Controllers
 {
-    [Authorize(Roles ="admin, user")]
     public class CategoriesController : Controller
     {
         private readonly DbgalleryContext _context;

@@ -15,7 +15,12 @@ else
             <a asp-controller="Account" asp-action="Login">Log in</a>
         <a asp-controller="Account" asp-action="Register">Registration</a>
 }
-
+@if (User.IsInRole("admin"))
+{
+      <li class="nav-item">
+          <a class="nav-link" asp-area="" asp-controller="Roles" asp-action="Index">Controls Roles</a>
+       </li>
+}
 
 <div class="jumbotron">
     <h1>Art Gallery</h1>
