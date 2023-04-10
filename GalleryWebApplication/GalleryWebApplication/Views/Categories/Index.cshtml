@@ -11,22 +11,22 @@
 </p>
 
 <div>
-    <h3>Оберіть excel-файл для заватаження</h3>
+    <h3>Select excel file to import</h3>
     @using (Html.BeginForm("Import", "Categories", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm-excel" }))
     {
             <div>
-                Завантажте Excel-файл:
+                    Download the Excel file:
                 <input type="file" name="fileExcel" id="fileExcel" />
                 <div>
-                    <input type="submit" value="Завантажити" />
+                        <input type="submit" value="Download" />
                 </div>
             </div>
     }
 </div>
 
 <div>
-    <h3>Завантаження інформації в файл (весь вміст)</h3>
-    <a asp-action="Export">Завантажити</a>
+    <h3>Loading information into a file (all content)</h3>
+    <a asp-action="Export">Download</a>
 
 </div>
 
