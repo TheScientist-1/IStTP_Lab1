@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GalleryWebApplication;
 using GalleryWebApplication.Models.GalleryViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GalleryWebApplication.Controllers
 {
@@ -75,6 +76,7 @@ namespace GalleryWebApplication.Controllers
 
 
         // GET: Authors/Create
+        [Authorize(Roles = "admin, superAdmin")]
         public IActionResult Create()
         {
             return View();
@@ -86,6 +88,7 @@ namespace GalleryWebApplication.Controllers
         [HttpPost]
 
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Create([Bind("Name,Contacts")] Author author)
         {
             if (ModelState.IsValid)
@@ -113,6 +116,7 @@ namespace GalleryWebApplication.Controllers
             return View(author);
         }*/
 
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -184,7 +188,7 @@ namespace GalleryWebApplication.Controllers
             }
             return View(author);
         }*/
-        
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Contacts")] Author author, string[] selectedProducts)
         {
             if (id == null)
@@ -222,7 +226,7 @@ namespace GalleryWebApplication.Controllers
             return View(authorToUpdate);
         }
 
-
+        [Authorize(Roles = "admin, superAdmin")]
         private void UpdateAuthorProducts(string[] selectedProducts, Author authorToUpdate)
         {
             /*if (selectedProducts == null)
@@ -257,6 +261,7 @@ namespace GalleryWebApplication.Controllers
 
 
         // GET: Authors/Delete/5
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Authors == null)
@@ -277,6 +282,7 @@ namespace GalleryWebApplication.Controllers
         // POST: Authors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Authors == null)

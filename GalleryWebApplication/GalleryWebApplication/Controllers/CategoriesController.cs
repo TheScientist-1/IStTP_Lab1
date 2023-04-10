@@ -54,6 +54,7 @@ namespace GalleryWebApplication.Controllers
         }
 
         // GET: Categories/Create
+        [Authorize(Roles = "admin, superAdmin")]
         public IActionResult Create()
         {
             return View();
@@ -64,6 +65,7 @@ namespace GalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Create([Bind("Id,Name,Info")] Category category)
         {
             if (ModelState.IsValid)
@@ -76,6 +78,7 @@ namespace GalleryWebApplication.Controllers
         }
 
         // GET: Categories/Edit/5
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Categories == null)
@@ -96,6 +99,7 @@ namespace GalleryWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Info")] Category category)
         {
             if (id != category.Id)
@@ -127,6 +131,7 @@ namespace GalleryWebApplication.Controllers
         }
 
         // GET: Categories/Delete/5
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Categories == null)
@@ -147,6 +152,7 @@ namespace GalleryWebApplication.Controllers
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Categories == null)
@@ -172,6 +178,7 @@ namespace GalleryWebApplication.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin, superAdmin")]
         public async Task<IActionResult> Import(IFormFile fileExcel)
         {
             if (ModelState.IsValid)
@@ -392,7 +399,7 @@ namespace GalleryWebApplication.Controllers
         }
         */
 
-
+        [Authorize(Roles = "admin, superAdmin")]
         public ActionResult Export()
         {
             using (XLWorkbook workbook = new XLWorkbook())

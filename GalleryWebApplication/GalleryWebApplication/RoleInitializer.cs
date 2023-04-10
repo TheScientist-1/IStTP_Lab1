@@ -17,6 +17,10 @@ namespace GalleryWebApplication
             {
                 await roleManager.CreateAsync(new IdentityRole("user"));
             }
+            if (await roleManager.FindByNameAsync("superAdmin") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("superAdmin"));
+            }
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
                 User admin = new User { Email = adminEmail, UserName = adminEmail };
